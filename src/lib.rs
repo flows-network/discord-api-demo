@@ -1,6 +1,6 @@
 use discord_flows::{
     application_command_handler,
-        http::{Http, HttpBuilder},
+    http::{Http, HttpBuilder},
     message_handler,
     model::{
         application::interaction::InteractionResponseType,
@@ -48,51 +48,51 @@ pub async fn on_deploy() {
 #[message_handler]
 async fn handle(msg: Message) {
     let discord_token = std::env::var("discord_token").unwrap();
-    let channel_id = env::var("discord_channel_id").unwrap_or("channel_id not found".to_string());
-    let channel_id = channel_id.parse::<u64>().unwrap();
+    // let channel_id = env::var("discord_channel_id").unwrap_or("channel_id not found".to_string());
+    // let channel_id = channel_id.parse::<u64>().unwrap();
 
     let bot = ProvidedBot::new(&discord_token);
 
-    let discord = HttpBuilder::new(&discord_token).build();
+    // let discord = HttpBuilder::new(&discord_token).build();
 
-    discord
-        .send_message(
-            channel_id,
-            &serde_json::json!({
-                "content": "Test Message",
-            }),
-        )
-        .await;
+    // discord
+    //     .send_message(
+    //         channel_id,
+    //         &serde_json::json!({
+    //             "content": "Test Message",
+    //         }),
+    //     )
+    //     .await;
     if msg.author.bot {
         return;
     }
-    discord
+    // discord
+    //     .send_message(
+    //         channel_id,
+    //         &serde_json::json!({
+    //             "content": &msg.content,
+    //         }),
+    //     )
+    //     .await;
+
+    let client = bot.get_client();
+    _ = client
         .send_message(
-            channel_id,
+            msg.channel_id.into(),
             &serde_json::json!({
-                "content": &msg.content,
+                "content": "placeholder",
             }),
         )
         .await;
 
-    let client = bot.get_client();
-    // _ = client
-    //     .send_message(
-    //         msg.channel_id.into(),
-    //         &serde_json::json!({
-    //             "content": "placeholder",
-    //         }),
-    //     )
-    //     .await;
-
-    // _ = client
-    //     .send_message(
-    //         msg.channel_id.into(),
-    //         &serde_json::json!({
-    //             "content": msg.content,
-    //         }),
-    //     )
-    //     .await;
+    _ = client
+        .send_message(
+            msg.channel_id.into(),
+            &serde_json::json!({
+                "content": msg.content,
+            }),
+        )
+        .await;
 }
 
 #[application_command_handler]
