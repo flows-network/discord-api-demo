@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 anyhow = "1.0.72"
-discord-flows = "0.6.0"
+discord-flows = "0.6.1"
 dotenv = "0.15.0"
 flowsnet-platform-sdk = "0.1"
 log = "0.4"

@@ -76,14 +76,14 @@ async fn handle(msg: Message) {
     //     .await;
 
     let client = bot.get_client();
-    _ = client
-        .send_message(
-            msg.channel_id.into(),
-            &serde_json::json!({
-                "content": "placeholder",
-            }),
-        )
-        .await;
+    // _ = client
+    //     .send_message(
+    //         msg.channel_id.into(),
+    //         &serde_json::json!({
+    //             "content": "placeholder",
+    //         }),
+    //     )
+    //     .await;
 
     _ = client
         .send_message(
