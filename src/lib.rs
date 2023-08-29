@@ -77,7 +77,7 @@ async fn handler(ac: ApplicationCommandInteraction) {
     let options = &ac.data.options;
 
     match ac.data.name.as_str() {
-        "weather" => {
+        "test" => {
             let city = match options
                 .get(0)
                 .expect("Expected city option")
@@ -169,7 +169,7 @@ fn get_weather(city: &str) -> Option<ApiResult> {
 
 async fn register_commands() {
     let command = serde_json::json!({
-        "name": "weather",
+        "name": "test",
         "description": "Get the weather for a city",
         "options": [
             {
