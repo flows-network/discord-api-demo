@@ -9,14 +9,10 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-anyhow = "1.0.72"
 discord-flows = "0.6.1"
-dotenv = "0.15.0"
 flowsnet-platform-sdk = "0.1"
 log = "0.4"
-openai-flows = "0.8.5"
 serde_json = "1"
 tokio_wasi = { version = "1.25.0", features = ["rt", "macros"] }
 serde = { version = "1", features = ["derive"] }
 http_req_wasi = { version = "0.10", features = ["wasmedge_ssl"] }
-unicase = "2.6.0"

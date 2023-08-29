@@ -1,6 +1,6 @@
 use discord_flows::{
     application_command_handler,
-    http::{Http, HttpBuilder},
+    http::HttpBuilder,
     message_handler,
     model::{
         application::interaction::InteractionResponseType,
@@ -10,7 +10,6 @@ use discord_flows::{
     },
     Bot, ProvidedBot,
 };
-use dotenv::dotenv;
 use flowsnet_platform_sdk::logger;
 use http_req::{
     request::{Method, Request},
@@ -23,19 +22,11 @@ use std::env;
 #[no_mangle]
 #[tokio::main(flavor = "current_thread")]
 pub async fn on_deploy() {
-    dotenv().ok();
     logger::init();
     let discord_token = env::var("discord_token").unwrap();
     let bot = ProvidedBot::new(&discord_token);
-    let commands_registered = env::var("COMMANDS_REGISTERED").unwrap_or("false".to_string());
 
-    match commands_registered.as_str() {
-        "false" => {
-            register_commands(&discord_token).await;
-            env::set_var("COMMANDS_REGISTERED", "true");
-        }
-        _ => {}
-    }
+    register_commands().await;
 
     bot.listen_to_messages().await;
 
@@ -47,44 +38,14 @@ pub async fn on_deploy() {
 
 #[message_handler]
 async fn handle(msg: Message) {
+    logger::init();
     let discord_token = std::env::var("discord_token").unwrap();
-    // let channel_id = env::var("discord_channel_id").unwrap_or("channel_id not found".to_string());
-    // let channel_id = channel_id.parse::<u64>().unwrap();
-
     let bot = ProvidedBot::new(&discord_token);
 
-    // let discord = HttpBuilder::new(&discord_token).build();
-
-    // discord
-    //     .send_message(
-    //         channel_id,
-    //         &serde_json::json!({
-    //             "content": "Test Message",
-    //         }),
-    //     )
-    //     .await;
     if msg.author.bot {
         return;
     }
-    // discord
-    //     .send_message(
-    //         channel_id,
-    //         &serde_json::json!({
-    //             "content": &msg.content,
-    //         }),
-    //     )
-    //     .await;
-
     let client = bot.get_client();
-    // _ = client
-    //     .send_message(
-    //         msg.channel_id.into(),
-    //         &serde_json::json!({
-    //             "content": "placeholder",
-    //         }),
-    //     )
-    //     .await;
-
     _ = client
         .send_message(
             msg.channel_id.into(),
@@ -97,9 +58,11 @@ async fn handle(msg: Message) {
 
 #[application_command_handler]
 async fn handler(ac: ApplicationCommandInteraction) {
+    logger::init();
     let discord_token = env::var("discord_token").unwrap();
     let bot = ProvidedBot::new(discord_token);
     let client = bot.get_client();
+
     client.set_application_id(ac.application_id.into());
 
     _ = client
@@ -111,7 +74,6 @@ async fn handler(ac: ApplicationCommandInteraction) {
             }),
         )
         .await;
-    // tokio::time::sleep(Duration::from_secs(3)).await;
     let options = &ac.data.options;
 
     match ac.data.name.as_str() {
@@ -145,11 +107,7 @@ async fn handler(ac: ApplicationCommandInteraction) {
                 ),
                 None => String::from("No city or incorrect spelling"),
             };
-            let resp = serde_json::json!(
-                {
-                    "content": resp_inner
-                }
-            );
+            let resp = serde_json::json!({ "content": resp_inner });
             _ = client
                 .edit_original_interaction_response(&ac.token, &resp)
                 .await;
@@ -209,16 +167,7 @@ fn get_weather(city: &str) -> Option<ApiResult> {
     None
 }
 
-async fn register_commands(discord_token: &str) {
-    let bot_id = env::var("bot_id").unwrap_or("1124137839601406013".to_string());
-    // let channel_id = env::var("discord_channel_id").unwrap_or("1128056246570860617".to_string());
-    //     let guild_id = env::var("discord_guild_id").unwrap_or("1128056245765558364".to_string());
-    //     // Define the Discord API endpoint for registering commands
-    //     let uri = format!(
-    //         "https://discord.com/api/v8/applications/{}/guilds/{}/commands",
-    //         bot_id, guild_id
-    //     );
-
+async fn register_commands() {
     let command = serde_json::json!({
         "name": "weather",
         "description": "Get the weather for a city",
@@ -232,9 +181,8 @@ async fn register_commands(discord_token: &str) {
         ]
     });
 
-    let http_client = HttpBuilder::new(discord_token)
-        .application_id(bot_id.parse().unwrap())
-        .build();
+    let discord_token = env::var("discord_token").unwrap();
+    let http_client = HttpBuilder::new(discord_token).build();
 
     match http_client
         .create_global_application_command(&command)
