@@ -168,6 +168,9 @@ fn get_weather(city: &str) -> Option<ApiResult> {
 }
 
 async fn register_commands() {
+
+    let bot_id = env::var("bot_id").unwrap_or("1124137839601406013".to_string());
+ 
     let command = serde_json::json!({
         "name": "test",
         "description": "Get the weather for a city",
@@ -182,7 +185,9 @@ async fn register_commands() {
     });
 
     let discord_token = env::var("discord_token").unwrap();
-    let http_client = HttpBuilder::new(discord_token).build();
+    let http_client = HttpBuilder::new(discord_token)
+        .application_id(bot_id.parse().unwrap())
+        .build();
 
     match http_client
         .create_global_application_command(&command)
