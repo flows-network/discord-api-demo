@@ -75,7 +75,7 @@ async fn handler(ac: ApplicationCommandInteraction) {
     let options = &ac.data.options;
 
     match ac.data.name.as_str() {
-        "test" => {
+        "weather" => {
             let city = match options
                 .get(0)
                 .expect("Expected city option")
@@ -170,7 +170,7 @@ async fn register_commands() {
     let bot_id = env::var("bot_id").unwrap_or("1124137839601406013".to_string());
  
     let command = serde_json::json!({
-        "name": "test",
+        "name": "weather",
         "description": "Get the weather for a city",
         "options": [
             {
