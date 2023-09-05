@@ -30,9 +30,7 @@ pub async fn on_deploy() {
 
     bot.listen_to_messages().await;
 
-    let channel_id = env::var("discord_channel_id").unwrap_or("channel_id not found".to_string());
-    let channel_id = channel_id.parse::<u64>().unwrap();
-    bot.listen_to_application_commands_from_channel(channel_id)
+    bot.listen_to_application_commands()
         .await;
 }
 
