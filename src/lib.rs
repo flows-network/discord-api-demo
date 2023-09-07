@@ -91,10 +91,13 @@ async fn handler(ac: ApplicationCommandInteraction) {
 
             let resp_inner = match get_weather(&city) {
                 Some(w) => format!(
-                    r#"Today: {},
-                Low temperature: {} °C,
-                High temperature: {} °C,
-                Wind Speed: {} km/h"#,
+                    r#"
+Today in {}
+{},
+Low temperature: {} °C,
+High temperature: {} °C,
+Wind Speed: {} km/h"#,
+                    city,
                     w.weather
                         .first()
                         .unwrap_or(&Weather {
@@ -168,9 +171,8 @@ fn get_weather(city: &str) -> Option<ApiResult> {
 }
 
 async fn register_commands() {
-
     let bot_id = env::var("bot_id").unwrap_or("1124137839601406013".to_string());
- 
+
     let command = serde_json::json!({
         "name": "test",
         "description": "Get the weather for a city",
